@@ -1,5 +1,5 @@
 import dbConnect from '../../lib/mongodb';
-import Haiku from '../../models/Haiku';
+import { Haiku } from '../../models/Haiku';  // Updated import
 
 export default async function handler(req, res) {
   await dbConnect();

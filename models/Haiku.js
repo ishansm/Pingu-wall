@@ -16,8 +16,21 @@ const HaikuSchema = new mongoose.Schema({
   }
 });
 
+// New Code schema
+const CodeSchema = new mongoose.Schema({
+  code: {
+    type: String,
+    default: ''
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
 function arrayLimit(val) {
   return val.length === 3;
 }
 
-export default mongoose.models.Haiku || mongoose.model('Haiku', HaikuSchema);
+export const Haiku = mongoose.models.Haiku || mongoose.model('Haiku', HaikuSchema);
+export const Code = mongoose.models.Code || mongoose.model('Code', CodeSchema);

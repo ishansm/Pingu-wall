@@ -4,6 +4,59 @@ export default function Canvas() {
   const [codeEditor, setCodeEditor] = useState('');
   const [showCode, setShowCode] = useState(true);
   const iframeRef = useRef(null);
+  const saveTimeoutRef = useRef(null);
+
+  // Load code on component mount
+  useEffect(() => {
+    loadCode();
+  }, []);
+
+  // Auto-save code when it changes
+  useEffect(() => {
+    if (codeEditor && codeEditor.trim()) {
+      // Clear existing timeout
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      
+      // Set new timeout for auto-save (1 second after user stops typing)
+      saveTimeoutRef.current = setTimeout(() => {
+        saveCode(codeEditor);
+      }, 1000);
+    }
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [codeEditor]);
+
+  const loadCode = async () => {
+    try {
+      const response = await fetch('/api/code');
+      if (response.ok) {
+        const data = await response.json();
+        setCodeEditor(data.code);
+      }
+    } catch (error) {
+      console.error('Failed to load code:', error);
+    }
+  };
+
+  const saveCode = async (code) => {
+    try {
+      await fetch('/api/code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+      console.log('Code auto-saved');
+    } catch (error) {
+      console.error('Failed to save code:', error);
+    }
+  };
 
   const createExecutableHTML = (code) => {
     return `<!DOCTYPE html>
